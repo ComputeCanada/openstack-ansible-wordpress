@@ -1,0 +1,26 @@
+---
+# install_omeka.yml
+- hosts: local
+  become: yes
+  become_method: sudo
+
+
+  pre_tasks:
+  - name: Append proper hostname entry to /etc/hosts
+    lineinfile:
+      path: "/etc/hosts"
+      line: "{{ server_local_ip }}    {{ server_hostname }}"
+
+
+  roles:
+  - { role: geerlingguy.ntp }
+  - { role: geerlingguy.mysql }
+  - { role: franklinkim.openssl }
+  - { role: geerlingguy.apache }
+  - { role: geerlingguy.php }
+  - { role: geerlingguy.apache-php-fpm }
+  - { role: geerlingguy.php-mysql }
+#  - { role: zerohacks.imagemagick }
+  - { role: install_ImageMagick }
+  - { role: arc-install-omeka, tags: ['omeka'] }
+

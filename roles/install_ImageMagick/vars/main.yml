@@ -1,0 +1,10 @@
+---
+# vars file for install_ImageMagick
+centos_packages:
+  - ImageMagick
+  - ImageMagick-devel
+
+ubuntu_packages:
+  - imagemagick
+  - libmagickcore-dev
+  - libmagickwand-dev

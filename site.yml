@@ -1,0 +1,5 @@
+---
+# site.yml
+
+- include: install_omeka.yml
+

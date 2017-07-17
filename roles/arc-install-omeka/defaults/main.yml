@@ -1,0 +1,20 @@
+---
+# defaults file for arc-install-omeka
+
+omeka_version: "2.5"
+omeka_src_file: "omeka-{{ omeka_version }}.zip"
+omeka_src_url: "http://omeka.org/files/{{ omeka_src_file }}"
+omeka_src_dest: "{{ web_document_root }}"
+omeka_old_dir: "{{ web_document_root }}/omeka-{{ omeka_version }}"
+omeka_web_dir: "{{ web_document_root }}/omeka"
+
+omeka_db_user: ""
+omeka_password: ""
+omeka_db_name: ""
+omeka_db_prefix: ""
+
+omeka_db_conf_src: "templates/db.ini.j2"
+omeka_db_conf_dest: "{{ omeka_web_dir }}/db.ini"
+
+omeka_user: "ubuntu"
+omeka_group: "www-data"

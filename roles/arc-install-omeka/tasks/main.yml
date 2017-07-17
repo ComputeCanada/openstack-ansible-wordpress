@@ -1,0 +1,86 @@
+---
+# tasks file for arc-install-omeka
+
+- name: Check if omeka is already installed
+  stat:
+    path: "{{ omeka_web_dir }}"
+  register: omeka_dir
+  tags:
+  - omeka
+
+
+- name: Download omeka source package
+  get_url:
+    url: "{{ omeka_src_url }}"
+    dest: "{{ web_document_root }}"
+  when: omeka_dir.stat.exists == False
+  tags:
+  - omeka
+
+
+- name: Unarchive the omeka source package
+  unarchive:
+    src: "{{ web_document_root }}/{{ omeka_src_file }}"
+    dest: "{{ web_document_root }}"
+    remote_src: True
+  when: omeka_dir.stat.exists == False
+  register: unarchive_src
+  tags:
+  - omeka
+
+
+- name: Remove the omeka source package
+  file:
+    path: "{{ web_document_root }}/{{ omeka_src_file }}"
+    state: absent
+  when: unarchive_src.changed
+  tags:
+  - omeka
+
+
+- name: Rename the omeka web directory
+  command: creates="{{ omeka_web_dir }}" mv "{{ omeka_old_dir }}" "{{ omeka_web_dir }}"
+  when: unarchive_src.changed
+  tags:
+  - omeka
+
+
+- name: Check (AGAIN) if omeka is already installed
+  stat:
+    path: "{{ omeka_web_dir }}"
+  register: omeka_dir
+  tags:
+  - omeka
+
+
+- name: Process the database config file
+  template:
+    src: "{{ omeka_db_conf_src }}"
+    dest: "{{ omeka_db_conf_dest }}"
+    backup: no
+  when: omeka_dir.stat.exists
+  tags:
+  - omeka
+
+
+- name: Change ownership for the omeka web root
+  file:
+    path: "{{ omeka_web_dir }}"
+    state: directory
+    owner: "{{ omeka_user }}"
+    group: "{{ omeka_group }}"
+    recurse: yes
+  when: omeka_dir.stat.exists
+  tags:
+  - omeka
+
+
+- name: Change permissions for the omeka files dir
+  file:
+    path: "{{ omeka_web_dir }}/files"
+    state: directory
+    mode: 0775
+    recurse: yes
+  when: omeka_dir.stat.exists
+  tags:
+  - omeka

@@ -1,0 +1,221 @@
+heat_template_version: 2015-04-30
+description: |
+  HEAT template used to create and configure an Omeka virtual machine
+  running on a Compute Canada cloud.
+
+parameter_groups:
+  - label: VM parameters
+    description: Parameters required to orchestrate the VM
+    parameters:
+    - sg_name
+    - sg_ssh_port
+    - sg_http_port
+    - sg_https_port
+    - private_network
+    - public_network
+    - kp_name
+    - vol_name
+    - vol_size
+    - vol_image
+    - server_name
+    - server_flavor
+
+  - label: Application parameters
+    description: Parameters required to deploy the application
+    parameters:
+    - do_updates
+    - do_upgrades
+    - deployment_repo_url
+   
+
+parameters:
+  sg_name:
+    type: string
+    label: Specify the security group name
+    description: Name of the security group for this instance
+    default: omeka_sg
+
+  sg_ssh_port:
+    type: string
+    label: Specify your SSH port
+    description: Port used for SSH network communication
+    default: 22
+
+  sg_http_port:
+    type: string
+    label: Specify your HTTP port
+    description: Port used for HTTP network communication
+    default: 80
+
+  sg_https_port:
+    type: string
+    label: Specify your HTTPS port
+    description: Port used for HTTPS network communication
+    default: 443
+
+  private_network:
+    type: string
+    label: Specify the private network used for this instance
+    description: Private network name or ID used for this instance
+    default: ivm-814_network
+    constraints:
+      - custom_constraint: neutron.network
+
+  public_network:
+    type: string
+    label: Specify the public network (west-cloud/east-cloud)
+    description: Public network name or ID used for this instance
+    default: VLAN3337
+    constraints:
+      - allowed_values:
+        - VLAN3337
+        - net04_ext
+
+  kp_name:
+    type: string
+    label: Specify an existing key pair
+    description: Name of the key pair used for this instance
+    default: yoga3pro
+    constraints:
+      - custom_constraint: nova.keypair
+
+  vol_name:
+    type: string
+    label: Specify a root volume for this instance
+    description: Volume used as root filesystem for this instance
+    default: omeka-root-volume
+
+  vol_size:
+    type:  string
+    label: Specify the size of the root volume (GB)
+    description: Size of the root volume used for this instance (GB)
+    default: 20
+
+  vol_image:
+    type: string
+    label: Specify the image used to create the root volume
+    description: Name of the image used to create the root volume
+    default: Ubuntu-16.04-Xenial-x64-2017-03
+    constraints:
+      - custom_constraint: glance.image
+
+  server_name:
+    type: string
+    label: Specify the name of the instance
+    description: Name used to identify the VM
+    default: omeka-test
+
+  server_flavor:
+    type: string
+    label: Specify the VM hardware type for this instance
+    description: It is recommended to select a 'p' flavor
+    default: p2-3gb
+    constraints:
+      - custom_constraint: nova.flavor
+
+  do_updates:
+    type: string
+    label: Perform software package index updates
+    description: (true) to perform updates, otherwise (false)
+    default: "true"
+    constraints:
+      - allowed_values:
+        - "true"
+        - "false"
+
+  do_upgrades:
+    type: string
+    label: Perform software package upgrades
+    description: (true) to perform upgrades, otherwise (false)
+    default: "true"
+    constraints:
+      - allowed_values:
+        - "true"
+        - "false"
+
+  deployment_repo_url:
+    type: string
+    label: Deployment repository URL
+    description: URL to Git repo used to deploy the primary application
+    default: https://github.com/ubcarc/openstack-ansible-omeka.git
+
+
+resources:
+  instance_security_group:
+    type: OS::Neutron::SecurityGroup
+    properties:
+      description: Security group used for this instance
+      name: { get_param: sg_name }
+      rules:
+        - protocol: tcp
+          remote_ip_prefix: 0.0.0.0/0
+          port_range_min: { get_param: sg_ssh_port }
+          port_range_max: { get_param: sg_ssh_port }
+        - protocol: tcp
+          remote_ip_prefix: 0.0.0.0/0
+          port_range_min: { get_param: sg_http_port }
+          port_range_max: { get_param: sg_http_port }
+        - protocol: tcp
+          remote_ip_prefix: 0.0.0.0/0
+          port_range_min: { get_param: sg_https_port }
+          port_range_max: { get_param: sg_https_port }
+
+  instance_port:
+    type: OS::Neutron::Port
+    properties:
+      network: { get_param: private_network }
+      security_groups:
+        - { get_resource: instance_security_group }
+
+  instance_root_volume:
+    type: OS::Cinder::Volume
+    properties:
+      name: { get_param: vol_name }
+      size: { get_param: vol_size }
+      image: { get_param: vol_image }
+
+  instance_server:
+    type: OS::Nova::Server
+    properties:
+      name: { get_param: server_name }
+      flavor: { get_param: server_flavor }
+      key_name: { get_param: kp_name }
+      networks:
+        - port: { get_resource: instance_port }
+      block_device_mapping:
+        - device_name: vda
+          volume_id: { get_resource: instance_root_volume }
+          delete_on_termination: false
+      user_data_format: RAW
+      user_data:
+        str_replace:
+          template: |
+            #cloud-config
+            apt_sources:
+              - source: "ppa:ansible/ansible"
+            package_update: DOUPDATES
+            package_upgrade: DOUPGRADES
+            packages:
+              - git
+              - unzip
+              - ansible
+            runcmd:
+              - ["git", "clone", "DEPLOYMENTREPOURL", "/home/ubuntu/deploy"]
+              - ["chown", "-R", "ubuntu:", "/home/ubuntu/deploy"]
+          params:
+            DOUPDATES: { get_param: do_updates }
+            DOUPGRADES: { get_param: do_upgrades }
+            DEPLOYMENTREPOURL: { get_param: deployment_repo_url }
+
+  instance_floating_ip:
+    type: OS::Neutron::FloatingIP
+    properties:
+      port_id: { get_resource: instance_port }
+      floating_network: { get_param: public_network }
+
+
+outputs:
+  public_ip:
+    description: Floating IP address used for this server
+    value: { get_attr: [ instance_floating_ip, floating_ip_address ] }
+

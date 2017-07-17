@@ -1,0 +1,15 @@
+---
+
+- name: Install ImageMagick on Ubuntu
+  become: yes
+  become_user: root
+  apt:
+    name: "{{ item }}"
+    state: "latest"
+  with_items: "{{ ubuntu_packages }}"
+
+
+- name: Copy policy file for ImageTragic fix on ubuntu
+  become: yes
+  become_user: root
+  copy: src=policy.xml dest=/etc/ImageMagick-6

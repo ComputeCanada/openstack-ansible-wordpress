@@ -1,0 +1,97 @@
+---
+
+# Server ext IP and hostname variables
+server_hostname: "{{ lookup('pipe', 'cat /etc/hostname') }}"
+server_local_ip: "{{ lookup('pipe', 'curl http://169.254.169.254/latest/meta-data/local-ipv4') }}"
+server_public_ip: "{{ lookup('pipe', 'curl http://169.254.169.254/latest/meta-data/public-ipv4') }}"
+server_public_domain: "cloud.computecanada.ca"
+server_fqdn: "{{ server_public_ip | regex_replace('\\.', '-') }}.{{ server_public_domain }}"
+
+
+# NTP role variables
+ntp_timezone: America/Vancouver
+
+
+# MySQL role variables
+mysql_root_password_update: yes
+mysql_user_password_update: yes
+
+omeka_db_user: "omeka_user"
+omeka_db_name: "omeka_db"
+omeka_db_prefix: "omeka_"
+
+mysql_databases:
+- name: "{{ omeka_db_name }}"
+  encoding: utf8
+  collation: utf8_general_ci
+
+mysql_users:
+- name: "{{ omeka_db_user }}"
+  host: "%"
+  password: "{{ omeka_password }}"
+  priv: "{{ omeka_db_name }}.*:ALL"
+
+
+# OpenSSL role variables
+openssl_certs_path: "/etc/ssl/certs/apache-selfsigned.crt"
+openssl_keys_path: "/etc/ssl/private/apache-selfsigned.key"
+openssl_default_key_owner: root
+openssl_default_key_group: root
+openssl_default_cert_owner: root
+openssl_default_cert_group: root
+
+openssl_config:
+  default_bits: 2048
+  countryName_default: "CA"
+  stateOrProvinceName_default: "Vancouver"
+  localityName_default: "British Columbia"
+  organizationName_default: "UBC"
+  organizationalUnitName_default: "ARC"
+  commonName_default: "{{ server_fqdn }}"
+
+openssl_self_signed:
+- name: "{{ server_fqdn }}"
+  domains:
+  - "{{ server_fqdn }}"
+  country: "{{ openssl_config.countryName_default }}"
+  state: "{{ openssl_config.stateOrProvinceName_default }}"
+  city: "{{ openssl_config.localityName_default }}"
+  organization: "{{ openssl_config.organizationName_default }}"
+  unit: "{{ openssl_config.organizationalUnitName_default }}"
+  email: "support@computecanada.ca"
+  days: "3650"
+
+
+# Apache role variables
+web_document_root: "/var/www/html"
+
+apache_remove_default_vhost: true
+
+apache_vhosts:
+- servername: "{{ server_fqdn }}"
+  documentroot: "{{ web_document_root }}"
+  extra_parameters: |
+    Redirect permanent "/" "https://{{ server_fqdn }}/"
+
+apache_vhosts_ssl:
+- servername: "{{ server_fqdn }}"
+  documentroot: "{{ web_document_root }}"
+  certificate_file: "{{ openssl_certs_path }}/{{ server_fqdn }}.crt"
+  certificate_key_file: "{{ openssl_keys_path }}/{{ server_fqdn }}.key"
+
+apache_ssl_protocol: "All -SSLv2 -SSLv3"
+apache_ssl_cipher_suite: "AES256+EECDH:AES256+EDH"
+
+
+# PHP role variables
+php_memory_limit: "128M"
+php_max_execution_time: "90"
+php_upload_max_filesize: "256M"
+php_packages:
+- php
+- php-cli
+- php-common
+- php-gd
+- php-xml
+- libapache2-mod-php
+

@@ -1,0 +1,14 @@
+---
+
+- name: Install ImageMagick on centos
+  become: yes
+  become_user: root
+  yum:
+    name: "{{ item }}"
+    state: "latest"
+  with_items: "{{ centos_packages }}"
+
+- name: Copy policy file for ImageTragic fix on centos
+  become: yes
+  become_user: root
+  copy: src=policy.xml dest=/etc/ImageMagick
