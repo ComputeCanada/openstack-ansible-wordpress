@@ -9,7 +9,7 @@
 
 - name: Install necessary additional PHP packages
   apt:
-    name: {{ item }}
+    name: "{{ item }}"
     state: latest
   with_items:
     - php-curl
