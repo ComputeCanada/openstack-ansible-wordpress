@@ -20,7 +20,5 @@
   - { role: geerlingguy.php }
   - { role: geerlingguy.apache-php-fpm }
   - { role: geerlingguy.php-mysql }
-#  - { role: zerohacks.imagemagick }
-  - { role: install_ImageMagick }
-  - { role: arc-install-omeka, tags: ['omeka'] }
+ #- { role: arc-install-omeka, tags: ['omeka'] }
 

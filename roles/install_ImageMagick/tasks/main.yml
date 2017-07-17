@@ -1,3 +1,0 @@
----
-
-- include: "{{ ansible_os_family }}_install.yml"
