@@ -20,5 +20,6 @@
   - { role: geerlingguy.php }
   - { role: geerlingguy.apache-php-fpm }
   - { role: geerlingguy.php-mysql }
+  - { role: arc-install-wordpress }
  #- { role: arc-install-omeka, tags: ['omeka'] }
 
