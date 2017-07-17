@@ -1,0 +1,21 @@
+---
+# tasks file for arc-install-wordpress
+- name: Check if wordpress is already installed
+  stat:
+    path: "{{ wordpress_web_dir }}"
+  register: wordpress_dir
+  tags:
+  - wordpress
+
+- name: Install necessary additional PHP packages
+  apt:
+    name: {{ item }}
+    state: latest
+  with_items:
+    - php-curl
+    - php-gd
+    - php-mbstring
+    - php-mcrypt
+    - php-xml
+    - php-xmlrpc
+
