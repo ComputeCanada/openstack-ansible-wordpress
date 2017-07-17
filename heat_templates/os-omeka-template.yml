@@ -137,7 +137,7 @@ parameters:
     type: string
     label: Deployment repository URL
     description: URL to Git repo used to deploy the primary application
-    default: https://github.com/ubcarc/openstack-ansible-omeka.git
+    default: https://github.com/ubcarc/openstack-ansible-wordpress.git 
 
 
 resources:
