@@ -85,3 +85,9 @@
   with_items:
     - "{{ wordpress_web_dir }}/wp-content/themes"
     - "{{ wordpress_web_dir }}/wp-content/plugins"
+
+- name: Writes wp-config.php file wth valid data
+  template:
+    src: wp-config.php.j2
+    dest: "{{ wordpress_web_dir }}/wp-config.php"
+    force: yes
