@@ -1,6 +1,6 @@
 heat_template_version: 2015-04-30
 description: |
-  HEAT template used to create and configure an Omeka virtual machine
+  HEAT template used to create and configure a WordPress virtual machine
   running on a Compute Canada cloud.
 
 parameter_groups:
@@ -33,7 +33,7 @@ parameters:
     type: string
     label: Specify the security group name
     description: Name of the security group for this instance
-    default: omeka_sg
+    default: wordpress_sg
 
   sg_ssh_port:
     type: string
@@ -83,7 +83,7 @@ parameters:
     type: string
     label: Specify a root volume for this instance
     description: Volume used as root filesystem for this instance
-    default: omeka-root-volume
+    default: wordpress-root-volume
 
   vol_size:
     type:  string
@@ -103,7 +103,7 @@ parameters:
     type: string
     label: Specify the name of the instance
     description: Name used to identify the VM
-    default: omeka-test
+    default: wordpress-test
 
   server_flavor:
     type: string
