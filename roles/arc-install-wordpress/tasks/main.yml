@@ -68,7 +68,7 @@
     recurse: yes
     owner: ubuntu
     group: www-data
-    mode: "g+s"
+    mode: "g+s,a+r"
 
 - name: Give group write access to the wp-content directory
   file:
