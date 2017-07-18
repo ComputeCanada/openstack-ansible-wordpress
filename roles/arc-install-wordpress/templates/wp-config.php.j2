@@ -20,13 +20,13 @@
 
 // ** MySQL settings - You can get this info from your web host ** //
 /** The name of the database for WordPress */
-define('DB_NAME', 'database_name_here');
+define('DB_NAME', '{{ wordpress_db_name }}');
 
 /** MySQL database username */
-define('DB_USER', 'username_here');
+define('DB_USER', '{{ wordpress_db_user }}');
 
 /** MySQL database password */
-define('DB_PASSWORD', 'password_here');
+define('DB_PASSWORD', '{{ wordpress_password }}');
 
 /** MySQL hostname */
 define('DB_HOST', 'localhost');
@@ -46,14 +46,7 @@ define('DB_COLLATE', '');
  *
  * @since 2.6.0
  */
-define('AUTH_KEY',         'put your unique phrase here');
-define('SECURE_AUTH_KEY',  'put your unique phrase here');
-define('LOGGED_IN_KEY',    'put your unique phrase here');
-define('NONCE_KEY',        'put your unique phrase here');
-define('AUTH_SALT',        'put your unique phrase here');
-define('SECURE_AUTH_SALT', 'put your unique phrase here');
-define('LOGGED_IN_SALT',   'put your unique phrase here');
-define('NONCE_SALT',       'put your unique phrase here');
+{{ lookup('pipe', 'curl -s https://api.wordpress.org/secret-key/1.1/salt/') }}
 
 /**#@-*/
 
@@ -63,7 +56,7 @@ define('NONCE_SALT',       'put your unique phrase here');
  * You can have multiple installations in one database if you give each
  * a unique prefix. Only numbers, letters, and underscores please!
  */
-$table_prefix  = 'wp_';
+$table_prefix  = '{{ wordpress_db_prefix }}';
 
 /**
  * For developers: WordPress debugging mode.
@@ -87,3 +80,5 @@ if ( !defined('ABSPATH') )
 
 /** Sets up WordPress vars and included files. */
 require_once(ABSPATH . 'wp-settings.php');
+
+define('FS_METHOD', 'direct');
