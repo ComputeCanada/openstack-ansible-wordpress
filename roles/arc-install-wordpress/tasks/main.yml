@@ -98,29 +98,29 @@
     recurse: "yes"
     owner: "ubuntu"
     group: "www-data"
-    mode: "g+s,a+r"
+    mode: "g+sw,a+r"
   tags:
   - wordpress
 
-- name: Give group write access to the wp-content directory
-  file:
-    path: "{{ wordpress_web_dir }}/wp-content"
-    state: "directory"
-    mode: "g+w"
-  tags:
-  - wordpress
-
-- name: Give group write access to themes/plugins folders
-  file:
-    path: "{{ item }}"
-    state: "directory"
-    mode: "g+w"
-    recurse: "yes"
-  with_items:
-    - "{{ wordpress_web_dir }}/wp-content/themes"
-    - "{{ wordpress_web_dir }}/wp-content/plugins"
-  tags:
-  - wordpress
+# name: Give group write access to the wp-content directory
+# file:
+#   path: "{{ wordpress_web_dir }}/wp-content"
+#   state: "directory"
+#   mode: "g+w"
+# tags:
+# - wordpress
+#
+# name: Give group write access to themes/plugins folders
+# file:
+#   path: "{{ item }}"
+#   state: "directory"
+#   mode: "g+w"
+#   recurse: "yes"
+# with_items:
+#   - "{{ wordpress_web_dir }}/wp-content/themes"
+#   - "{{ wordpress_web_dir }}/wp-content/plugins"
+# tags:
+# - wordpress
 
 - name: Writes wp-config.php file wth valid data
   template:
