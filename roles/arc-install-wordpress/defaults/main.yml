@@ -1,3 +1,9 @@
 ---
 # defaults file for arc-install-wordpress
 wordpress_web_dir: "{{ web_document_root }}/wordpress"
+wordpress_tmp_dir: "/tmp/wordpress"
+
+wordpress_url: "https://wordpress.org/latest.tar.gz"
+wordpress_archv: "wordpress.tar.gz"
+
+wordpress_config_template: "wp-config.php.j2"

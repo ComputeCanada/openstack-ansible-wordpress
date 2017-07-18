@@ -18,6 +18,8 @@
     - php-mcrypt
     - php-xml
     - php-xmlrpc
+  tags:
+  - wordpress
 
 - name: Enable .htaccess overrides in apache2.conf file
   blockinfile:
@@ -26,68 +28,104 @@
       <Directory /var/www/html/>
           AllowOverride All
       </Directory>
+  tags:
+  - wordpress
 
 - name: Enable the mod_rewrite module
   command: a2enmod rewrite
+  tags:
+  - wordpress
 
 - name: Download the latest WordPress archive
   get_url:
-    url: https://wordpress.org/latest.tar.gz
-    dest: /tmp/wordpress.tar.gz
+    url: "{{ wordpress_url }}"
+    dest: "/tmp/{{ wordpress_archv }}"
+  when: wordpress_dir.stat.exists == False
+  tags:
+  - wordpress
 
 - name: Un-archive the WordPress archive
   unarchive:
-    src: /tmp/wordpress.tar.gz
+    src: "/tmp/{{ wordpress_archv }}"
     dest: /tmp
     remote_src: "True"
+  tags:
+  - wordpress
+
+- name: Check if wordpress tmp directory exists
+  stat:
+    path: "{{ wordpress_tmp_dir }}"
+  register: wordpress_temp_dir
+  tags:
+  - wordpress
 
 - name: Create dummy .htaccess file
   file:
-    path: /tmp/wordpress/.htaccess
-    state: touch
+    path: "{{ wordpress_tmp_dir }}/.htaccess"
+    state: "touch"
     mode: 660
+  when: wordpress_temp_dir.stat.exists == True
+  tags:
+  - wordpress
 
 - name: Copy dummy WordPress configuration file to proper one
   copy:
-    src: /tmp/wordpress/wp-config-sample.php
-    dest: /tmp/wordpress/wp-config.php
+    src: "{{ wordpress_tmp_dir }}/wp-config-sample.php"
+    dest: "{{ wordpress_tmp_dir }}/wp-config.php"
     remote_src: "True"
+  when: wordpress_temp_dir.stat.exists == True
+  tags:
+  - wordpress
 
 - name: Create an upgrade direcrory for WordPress
   file:
-    path: /tmp/wordpress/wp-content/upgrade
-    state: directory
+    path: "{{ wordpress_tmp_dir }}/wp-content/upgrade"
+    state: "directory"
+  when: wordpress_temp_dir.stat.exists == True
+  tags:
+  - wordpress
 
 - name: Copy WordPress files to web document root
-  command: creates="{{ wordpress_web_dir }}" mv "/tmp/wordpress" "{{ wordpress_web_dir }}"
+  command: creates="{{ wordpress_web_dir }}" mv "{{ wordpress_tmp_dir }}" "{{ wordpress_web_dir }}" #"
+  when: wordpress_temp_dir.stat.exists == True
+  tags:
+  - wordpress
 
 - name: Change ownership on all web documents
   file:
     path: "{{ web_document_root }}"
-    state: directory
-    recurse: yes
-    owner: ubuntu
-    group: www-data
+    state: "directory"
+    recurse: "yes"
+    owner: "ubuntu"
+    group: "www-data"
     mode: "g+s,a+r"
+  tags:
+  - wordpress
 
 - name: Give group write access to the wp-content directory
   file:
     path: "{{ wordpress_web_dir }}/wp-content"
-    state: directory
+    state: "directory"
     mode: "g+w"
+  tags:
+  - wordpress
 
 - name: Give group write access to themes/plugins folders
   file:
     path: "{{ item }}"
-    state: directory
+    state: "directory"
     mode: "g+w"
-    recurse: yes
+    recurse: "yes"
   with_items:
     - "{{ wordpress_web_dir }}/wp-content/themes"
     - "{{ wordpress_web_dir }}/wp-content/plugins"
+  tags:
+  - wordpress
 
 - name: Writes wp-config.php file wth valid data
   template:
-    src: wp-config.php.j2
+    src: "{{ wordpress_config_template }}"
     dest: "{{ wordpress_web_dir }}/wp-config.php"
-    force: yes
+    force: "yes"
+  tags:
+  - wordpress
