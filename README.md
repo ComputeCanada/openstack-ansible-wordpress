@@ -65,3 +65,5 @@ Project for automating the installation of WordPress on Ubuntu-16.04 using Compu
 15. Wait for the script to finish. If your setup went properly then you should not see any messages resembling errors and when the script finishes you should be able to access your WordPress site by entering **"[YOUR_FLOATING_IP]/wordpress"** into your browser to begin the web-based setup WordPress thinks it's famous for.
 ![Successful Web-page redirect to WordPress login page](/docs/images/15.png)
 *Successful Web-page redirect to WordPress login page*
+
+**\* Note that THE FIRST PERSON to access the site will be able to carry out the web-based setup so it is highly recommended that you do not leave this step for later** 
