@@ -37,7 +37,7 @@ Project for automating the installation of WordPress on Ubuntu-16.04 using Compu
   * Whatever size you need your storage to be (in GB) for size of the root volume.
   * Ubuntu-16.04-Xenial for image used to create the root volume
   * Whatever name you want for the name of the instance
-  * The flavor to fit your needs for the hardware type. Refer to [Compute Canada's Documentation](https://docs.computecanada.ca/wiki/Virtual_machine_flavors) for details on what these values mean.
+  * The flavor to fit your needs for the hardware type. Refer to [Compute Canada's Documentation](https://docs.computecanada.ca/wiki/Virtual_machine_flavors) for details on what these values mean. Dev or Test recommendation is a p2-(3gb/1.5gb).
   * True for both Software Package Index Updates and Upgrades to apply software updates on first boot.
   * The default repository for Deployment Repository
 ![Stack --> Launch Stack](/docs/images/8.png)
