@@ -31,7 +31,7 @@ Project for automating the installation of WordPress on Ubuntu-16.04 using Compu
   * Your West/East Cloud password in the password field
   * SSH/HTTP/HTTPS port fields to default
   * Your project's private network in the private network field
-  * VLAN3337 for the public network on West Cloud or IDONTKNOWWHAT on East Cloud
+  * **VLAN3337** for the public network on West Cloud or **net04_ext** on East Cloud
   * A key pair of your choice for the key pair. If you are unclear on this step then refer to [Compute Canada's Documentation](https://docs.computecanada.ca/wiki/Cloud_Quick_Start) for SSH keys.
   * Any name you want for the root volume
   * Whatever size you need your storage to be (in GB) for size of the root volume.
