@@ -1,5 +1,5 @@
 # openstack-ansible-wordpress
-Project for automating the installation of WordPress using Compute Canada cloud resources
+Project for automating the installation of WordPress on Ubuntu-16.04 using Compute Canada cloud resources
 
 ## Quick Start
 
