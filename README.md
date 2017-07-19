@@ -3,7 +3,7 @@ Project for automating the installation of WordPress on Ubuntu-16.04 using Compu
 
 ## Quick Start
 
-1. First of all you will need the link to the Raw source file for the heat template used to construct your virtual machine. This is located on this github repository under the heat_templates directory as os-wordpress-template.yml (Alternatively, use: https://raw.githubusercontent.com/ubcarc/openstack-ansible-wordpress/master/heat_templates/os-wordpress-template.yml)
+1. First of all you will need the link to the Raw source file for the heat template used to construct your virtual machine. This is located on this github repository under the heat_templates directory as os-wordpress-template.yml (Alternatively, use: https://raw.githubusercontent.com/ComputeCanada/openstack-ansible-wordpress/master/heat_templates/os-wordpress-template.yml)
 ![Where to start on this GitHub](/docs/images/1.png)
 *Where to start on this GitHub*
 2. Click the Raw button as is show below:
